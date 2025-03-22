@@ -49,6 +49,27 @@ func main() {
 	fmt.Printf("Original: %q\n", message)
 	fmt.Printf("Encoded: %q\n", encoded) // Should be "IMNNA_FTAOIGROE"
 
+	// shiftByLetter
+	fmt.Println("\nTesting shiftByLetter")
+	fmt.Printf("shiftByLetter(\"A\", \"A\") = %q\n", shiftByLetter("A", "A")) // A
+	fmt.Printf("shiftByLetter(\"A\", \"C\") = %q\n", shiftByLetter("A", "C")) // C
+	fmt.Printf("shiftByLetter(\"B\", \"K\") = %q\n", shiftByLetter("B", "K")) // L
+	fmt.Printf("shiftByLetter(\" \", \"B\") = %q\n", shiftByLetter(" ", "B")) // space
+
+	// scytaleDecipher
+	fmt.Println("\nTesting scytaleDecipher")
+	encoded = scytaleCipher("INFORMATION_AGE", 3)
+	decoded := scytaleDecipher(encoded, 3)
+	fmt.Printf("Original:  %q\n", "INFORMATION_AGE")
+	fmt.Printf("Encoded:   %q\n", encoded) // IMNNA_FTAOIGROE
+	fmt.Printf("Decoded:   %q\n", decoded) // INFORMATION_AGE
+
+	// Test another example
+	encoded2 := scytaleCipher("ALGORITHMS_ARE_IMPORTANT", 8)
+	decoded2 := scytaleDecipher(encoded2, 8)
+	fmt.Printf("\nOriginal:  %q\n", "ALGORITHMS_ARE_IMPORTANT")
+	fmt.Printf("Encoded:   %q\n", encoded2) // AOTSRIOALRH_EMRNGIMA_PTT
+	fmt.Printf("Decoded:   %q\n", decoded2) // ALGORITHMS_ARE_IMPORTANT
 }
 
 // Savings calculates the money remaining for an employee after taxes and expenses.
