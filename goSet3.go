@@ -81,69 +81,68 @@ func relationshipStatus(fromMember string, toMember string, socialGraph map[stri
 // - the symbol of the winner, or "NO WINNER" if there is no winner.
 func ticTacToe(board [][]string) string {
 	n := len(board)
-
-	// Check rows
+	//determine wincons, diag, rows, column, anti-diag,
+	//rows
 	for i := 0; i < n; i++ {
-		if board[i][0] != "" && allSame(board[i]) {
-			return board[i][0]
-		}
-	}
-
-	// Check columns
-	for j := 0; j < n; j++ {
-		if board[0][j] != "" {
-			winner := true
-			for i := 1; i < n; i++ {
-				if board[i][j] != board[0][j] {
-					winner = false
+		if board[i][0] != "" {
+			allSame := true
+			for j := 1; j < n; j++ {
+				if board[i][j] == "" || board[i][j] != board[i][0] {
+					allSame = false
 					break
 				}
 			}
-			if winner {
+			if allSame {
+				return board[i][0]
+			}
+		}
+	}
+
+	// columns
+	for j := 0; j < n; j++ {
+		if board[0][j] != "" {
+			allSame := true
+			for i := 1; i < n; i++ {
+				if board[i][j] == "" || board[i][j] != board[0][j] {
+					allSame = false
+					break
+				}
+			}
+			if allSame {
 				return board[0][j]
 			}
 		}
 	}
 
-	// Check diagonal
+	// diagonal
 	if board[0][0] != "" {
-		winner := true
+		allSame := true
 		for i := 1; i < n; i++ {
-			if board[i][i] != board[0][0] {
-				winner = false
+			if board[i][i] == "" || board[i][i] != board[0][0] {
+				allSame = false
 				break
 			}
 		}
-		if winner {
+		if allSame {
 			return board[0][0]
 		}
 	}
 
-	// Check anti-diagonal
+	// anti-diagonal
 	if board[0][n-1] != "" {
-		winner := true
+		allSame := true
 		for i := 1; i < n; i++ {
-			if board[i][n-1-i] != board[0][n-1] {
-				winner = false
+			if board[i][n-1-i] == "" || board[i][n-1-i] != board[0][n-1] {
+				allSame = false
 				break
 			}
 		}
-		if winner {
+		if allSame {
 			return board[0][n-1]
 		}
 	}
 
 	return "NO WINNER"
-}
-
-// Helper function for ticTacToe
-func allSame(row []string) bool {
-	for i := 1; i < len(row); i++ {
-		if row[i] != row[0] {
-			return false
-		}
-	}
-	return true
 }
 
 // ETA
@@ -164,18 +163,16 @@ func allSame(row []string) bool {
 // Returns:
 // - the time that it will take the shuttle to travel from firstStop to secondStop
 
-// assume shuttle cant go backwards must loop around
 func eta(firstStop string, secondStop string, routeMap map[string]map[string]int) int {
-	// Create a map of all stops and their connections
+	// map of all stops and their connections
 	stops := make(map[string]map[string]int)
 
-	// make graph from routeMap
+	// make graph from routeMap then reference graph for everything
 	for route, data := range routeMap {
 		stops1 := strings.Split(route, ",")
 		from, to := stops1[0], stops1[1]
 		time := data["travel_time_mins"]
 
-		// maps
 		if stops[from] == nil {
 			stops[from] = make(map[string]int)
 		}
@@ -183,12 +180,11 @@ func eta(firstStop string, secondStop string, routeMap map[string]map[string]int
 			stops[to] = make(map[string]int)
 		}
 
-		//connect the stops and save their time
+		// clockwise only
 		stops[from][to] = time
-		stops[to][from] = time
 	}
 
-	//assuming circular route make shortest path
+	// in clockwise direction
 	current := firstStop
 	totalTime := 0
 	visited := make(map[string]bool)
@@ -196,16 +192,26 @@ func eta(firstStop string, secondStop string, routeMap map[string]map[string]int
 	for current != secondStop {
 		visited[current] = true
 		nextStop := ""
+		minTime := -1
+
+		// unvisited neighbor with mintime
 		for stop, time := range stops[current] {
-			if !visited[stop] {
+			if !visited[stop] && (minTime == -1 || time < minTime) {
 				nextStop = stop
-				totalTime += time
-				break
+				minTime = time
 			}
 		}
+
 		if nextStop == "" {
-			break
+			//in the case where no unvisited neighbor is found, went wrong way
+			//reset and try different path
+			current = firstStop
+			totalTime = 0
+			visited = make(map[string]bool)
+			continue
 		}
+
+		totalTime += minTime
 		current = nextStop
 	}
 
