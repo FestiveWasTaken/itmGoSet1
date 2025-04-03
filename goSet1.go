@@ -49,27 +49,54 @@ func main() {
 	fmt.Printf("Original: %q\n", message)
 	fmt.Printf("Encoded: %q\n", encoded) // Should be "IMNNA_FTAOIGROE"
 
-	// shiftByLetter
-	fmt.Println("\nTesting shiftByLetter")
-	fmt.Printf("shiftByLetter(\"A\", \"A\") = %q\n", shiftByLetter("A", "A")) // A
-	fmt.Printf("shiftByLetter(\"A\", \"C\") = %q\n", shiftByLetter("A", "C")) // C
-	fmt.Printf("shiftByLetter(\"B\", \"K\") = %q\n", shiftByLetter("B", "K")) // L
-	fmt.Printf("shiftByLetter(\" \", \"B\") = %q\n", shiftByLetter(" ", "B")) // space
+	// relationshipStatus
+	fmt.Println("Testing relationshipStatus:")
+	socialGraph := map[string]map[string]interface{}{
+		"@bongolpoc": {
+			"first_name": "Joselito",
+			"last_name":  "Olpoc",
+			"following":  "",
+		},
+		"@joaquin": {
+			"first_name": "Joaquin",
+			"last_name":  "Gonzales",
+			"following":  "@chums,@jobenilagan",
+		},
+		"@chums": {
+			"first_name": "Matthew",
+			"last_name":  "Uy",
+			"following":  "@bongolpoc,@miketan,@rudyang,@joeilagan",
+		},
+	}
 
-	// scytaleDecipher
-	fmt.Println("\nTesting scytaleDecipher")
-	encoded = scytaleCipher("INFORMATION_AGE", 3)
-	decoded := scytaleDecipher(encoded, 3)
-	fmt.Printf("Original:  %q\n", "INFORMATION_AGE")
-	fmt.Printf("Encoded:   %q\n", encoded) // IMNNA_FTAOIGROE
-	fmt.Printf("Decoded:   %q\n", decoded) // INFORMATION_AGE
+	fmt.Printf("@joaquin -> @chums: %s\n", relationshipStatus("@joaquin", "@chums", socialGraph))
+	fmt.Printf("@chums -> @joaquin: %s\n", relationshipStatus("@chums", "@joaquin", socialGraph))
+	fmt.Printf("@bongolpoc -> @chums: %s\n", relationshipStatus("@bongolpoc", "@chums", socialGraph))
 
-	// Test another example
-	encoded2 := scytaleCipher("ALGORITHMS_ARE_IMPORTANT", 8)
-	decoded2 := scytaleDecipher(encoded2, 8)
-	fmt.Printf("\nOriginal:  %q\n", "ALGORITHMS_ARE_IMPORTANT")
-	fmt.Printf("Encoded:   %q\n", encoded2) // AOTSRIOALRH_EMRNGIMA_PTT
-	fmt.Printf("Decoded:   %q\n", decoded2) // ALGORITHMS_ARE_IMPORTANT
+	//ticTacToe
+	fmt.Println("\nTesting ticTacToe:")
+	board := [][]string{
+		{"X", "X", "O"},
+		{"O", "X", "O"},
+		{"", "O", "X"},
+	}
+	fmt.Printf("Winner: %s\n", ticTacToe(board))
+
+	//eta
+	fmt.Println("\nTesting eta:")
+	routeMap := map[string]map[string]int{
+		"upd,admu": {
+			"travel_time_mins": 10,
+		},
+		"admu,dlsu": {
+			"travel_time_mins": 35,
+		},
+		"dlsu,upd": {
+			"travel_time_mins": 55,
+		},
+	}
+	fmt.Printf("Time from upd to dlsu: %d minutes\n", eta("upd", "dlsu", routeMap))
+	fmt.Printf("Time from admu to upd: %d minutes\n", eta("admu", "upd", routeMap))
 }
 
 // Savings calculates the money remaining for an employee after taxes and expenses.

@@ -57,34 +57,6 @@ func caesarCipher(message string, shift int) string {
 	return result
 }
 
-// Shift by letter
-//
-// Shift a letter to the right using the number equivalent of another letter.
-// The shift letter is any letter from A to Z, where A represents 0, B represents 1, ..., Z represents 25.
-//
-// Examples
-// shiftByLetter("A", "A") -> "A"
-// shiftByLetter("A", "C") -> "C"
-// shiftByLetter("B", "K") -> "L"
-// shiftByLetter(" ", _) -> " "
-//
-// Params:
-// - letter, a single uppercase English letter, or a space
-// - letterShift, a single uppercase English letter
-//
-// Returns:
-// - the letter, shifted appropriately
-func shiftByLetter(letter string, letterShift string) string {
-	if letter == " " {
-		return " "
-	}
-	// letterShift to value 0-25
-	shift := int(letterShift[0] - 'A')
-
-	// shift the letter
-	return shiftLetter(letter, shift)
-}
-
 // Vigenere cipher https://www.wikiwand.com/en/articles/Vigen%C3%A8re_cipher
 //
 // Encrypt a message using a keyphrase instead of a static number.
@@ -171,48 +143,17 @@ func vigenereCipher(message string, key string) string {
 // Returns:
 // - the message, encoded appropriately.
 func scytaleCipher(message string, shift int) string {
-	// find the final length
-	finalLen := ((len(message) + shift - 1) / shift) * shift
-
-	//exact capacity needed
-	result := make([]byte, finalLen)
-
-	//padding
-	copy(result, message)
-	for i := len(message); i < finalLen; i++ {
-		result[i] = '_'
+	// Pad message with underscores if needed
+	for len(message)%shift != 0 {
+		message += "_"
 	}
 
-	//output slice
-	encoded := make([]byte, finalLen)
-	cols := finalLen / shift
+	result := make([]rune, len(message))
+	rows := len(message) / shift
 
-	//encode
-	for i := 0; i < finalLen; i++ {
-		newIndex := (i / shift) + cols*(i%shift)
-		encoded[i] = result[newIndex]
-	}
-
-	return string(encoded)
-}
-
-func scytaleDecipher(message string, shift int) string {
-	messageLen := len(message)
-	cols := messageLen / shift
-
-	// result fr returning
-	result := make([]byte, messageLen)
-
-	//decode by reversing the encoding formula
-	for i := 0; i < messageLen; i++ {
-		//  encoding: newIndex := (i / shift) + cols*(i%shift)
-		//  decoding: i = row + cols*col where row = i/shift and col = i%shift
-		row := i / cols
-		col := i % cols
-		originalIndex := col*shift + row
-		if originalIndex < messageLen {
-			result[i] = message[originalIndex]
-		}
+	for i := 0; i < len(message); i++ {
+		oldIndex := (i / shift) + (rows * (i % shift))
+		result[i] = rune(message[oldIndex])
 	}
 
 	return string(result)
